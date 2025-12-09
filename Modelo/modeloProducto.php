@@ -22,7 +22,7 @@ class modeloProducto {
         OBTENER PRODUCTOS
     ============================ */
     public function obtenerProductos() {
-        $sql = "SELECT idProducto, nombreP, descripcionP, stock, fechaI FROM Producto";
+        $sql = "SELECT idProducto, nombreP, descripcionP, stock, fechaI FROM producto";
         $stmt = $this->db->query($sql);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
@@ -35,7 +35,7 @@ class modeloProducto {
             $this->db->beginTransaction();
 
             // Insertar producto
-            $sql = "INSERT INTO Producto (idUsuario, nombreP, descripcionP, stock)
+            $sql = "INSERT INTO producto (idUsuario, nombreP, descripcionP, stock)
                     VALUES (?, ?, ?, ?)";
             $stmt = $this->db->prepare($sql);
             $stmt->execute([$idUsuario, $nombreP, $descripcionP, $stock]);
@@ -43,7 +43,7 @@ class modeloProducto {
             $idProducto = $this->db->lastInsertId();
 
             // Registrar movimiento
-            $sql2 = "INSERT INTO Movimientos (tipo, idUsuario, idProducto, cantidad)
+            $sql2 = "INSERT INTO movimientos (tipo, idUsuario, idProducto, cantidad)
                      VALUES ('entrada', ?, ?, ?)";
             $stmt2 = $this->db->prepare($sql2);
             $stmt2->execute([$idUsuario, $idProducto, $stock]);
@@ -61,7 +61,7 @@ class modeloProducto {
         ACTUALIZAR PRODUCTO
     ============================ */
     public function actualizarProducto($idProducto, $nombreP, $descripcionP, $stock) {
-        $sql = "UPDATE Producto 
+        $sql = "UPDATE producto 
                 SET nombreP=?, descripcionP=?, stock=?
                 WHERE idProducto=?";
         $stmt = $this->db->prepare($sql);
@@ -76,12 +76,12 @@ class modeloProducto {
             $this->db->beginTransaction();
 
             // Borrar movimientos
-            $sql = "DELETE FROM Movimientos WHERE idProducto=?";
+            $sql = "DELETE FROM movimientos WHERE idProducto=?";
             $stmt = $this->db->prepare($sql);
             $stmt->execute([$idProducto]);
 
             // Borrar producto
-            $sql2 = "DELETE FROM Producto WHERE idProducto=?";
+            $sql2 = "DELETE FROM producto WHERE idProducto=?";
             $stmt2 = $this->db->prepare($sql2);
             $stmt2->execute([$idProducto]);
 
@@ -98,7 +98,7 @@ class modeloProducto {
         OBTENER STOCK
     ============================ */
     public function obtenerStock($idProducto) {
-        $sql = "SELECT stock FROM Producto WHERE idProducto=?";
+        $sql = "SELECT stock FROM producto WHERE idProducto=?";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$idProducto]);
         return $stmt->fetchColumn() ?: 0;
@@ -112,7 +112,7 @@ class modeloProducto {
             $this->db->beginTransaction();
 
             // Registrar movimiento
-            $sql = "INSERT INTO Movimientos (tipo, idUsuario, idProducto, cantidad)
+            $sql = "INSERT INTO movimientos (tipo, idUsuario, idProducto, cantidad)
                     VALUES (?, ?, ?, ?)";
             $stmt = $this->db->prepare($sql);
             $stmt->execute([$tipo, $idUsuario, $idProducto, $cantidad]);
@@ -139,13 +139,13 @@ class modeloProducto {
             $this->db->beginTransaction();
 
             // Movimiento devolución
-            $sql = "INSERT INTO Movimientos (tipo, idUsuario, idProducto, cantidad)
+            $sql = "INSERT INTO movimientos (tipo, idUsuario, idProducto, cantidad)
                     VALUES ('devolucion', ?, ?, ?)";
             $stmt = $this->db->prepare($sql);
             $stmt->execute([$idUsuario, $idProducto, $cantidad]);
 
             // Sumar al stock
-            $sql2 = "UPDATE Producto SET stock = stock + ? WHERE idProducto=?";
+            $sql2 = "UPDATE producto SET stock = stock + ? WHERE idProducto=?";
             $stmt2 = $this->db->prepare($sql2);
             $stmt2->execute([$cantidad, $idProducto]);
 
