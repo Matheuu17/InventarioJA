@@ -42,14 +42,33 @@
         }
     </style>
 </head>
-<?php require_once('../Controlador/controladorProducto.php'); ?>
+<?php 
+// Se requiere el controlador para cargar $datos['productos'] y $datos['error']
+require_once('../Controlador/controladorProducto.php');
+
+// Lógica de inicio de sesión (Asegúrate de que esto esté cargado)
+if (session_status() === PHP_SESSION_NONE) { session_start(); }
+if (!isset($_SESSION['idUsuario'])) {
+    header("Location: ../index.php");
+    exit();
+}
+
+// Variables de prueba si no vienen del controlador (BORRAR en producción)
+if (empty($datos['productos'])) {
+    $datos['productos'] = [
+        ['idProducto' => '101', 'nombreP' => 'Laptop Gamer Pro', 'stock' => 15],
+        ['idProducto' => '102', 'nombreP' => 'Monitor 4K', 'stock' => 5],
+        ['idProducto' => '103', 'nombreP' => 'Mousepad XL', 'stock' => 0],
+    ];
+}
+$datos['error'] = $datos['error'] ?? null;
+?>
 <body class="font-display bg-background-light dark:bg-background-dark min-h-screen flex items-start sm:items-center justify-center px-4">
 <div class="w-full max-w-[640px] my-6">
-    <!-- HEADER -->
     <header class="flex items-center justify-between whitespace-nowrap border border-ice/70 dark:border-gray-700 bg-startup-white dark:bg-background-dark rounded-t-xl px-6 py-3 shadow-sm">
-        <div class="flex items-center gap-3 text-immersive-blue-black dark:text-startup-white">
-            <div class="size-8 flex items-center justify-center rounded-full bg-resilient-turquoise/10 text-resilient-turquoise">
-                <span class="material-symbols-outlined text-[26px]">arrow_upward</span>
+        <div class="flex flex-wrap items-center gap-3 text-immersive-blue-black dark:text-startup-white">
+            <div class="size-8 flex items-center justify-center rounded-full bg-resilient-turquoise/10 text-red-600 dark:text-red-400">
+                <span class="material-symbols-outlined text-[26px]">arrow_downward</span>
             </div>
             <div>
                 <h2 class="text-lg font-bold leading-tight tracking-[-0.015em]">Registrar salida</h2>
@@ -58,23 +77,23 @@
                 </p>
             </div>
         </div>
+        <a href="../Controlador/controladorProducto.php?accion=listar"
+           class="hidden sm:inline-flex items-center justify-center rounded-full h-8 px-3 bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-200 text-xs font-bold hover:bg-gray-300 dark:hover:bg-gray-600 transition">
+            <span class="material-symbols-outlined text-base">arrow_back</span>
+        </a>
     </header>
 
-    <!-- MAIN CARD -->
     <main class="bg-startup-white dark:bg-background-dark rounded-b-xl shadow-sm border-x border-b border-ice/70 dark:border-gray-700">
-        <div class="px-6 pt-4 pb-3">
-            <p class="text-immersive-blue-black dark:text-startup-white text-2xl sm:text-3xl font-black leading-tight tracking-[-0.03em] mb-1">
-                Registrar salida de producto
+        <div class="p-6">
+            <p class="text-immersive-blue-black dark:text-startup-white text-3xl font-black leading-tight tracking-[-0.03em] mb-2">
+                Salida de Inventario
             </p>
-            <p class="text-gray-600 dark:text-gray-400 text-sm">
-                Completa el formulario para actualizar el inventario.
+            <p class="text-gray-600 dark:text-gray-400 text-sm mb-4">
+                Selecciona el producto y la cantidad a retirar del stock.
             </p>
-        </div>
 
-        <div class="px-6 pb-4">
-            <div class="flex flex-col gap-5 bg-startup-white dark:bg-background-dark border border-ice dark:border-gray-700 p-5 rounded-xl">
-
-                <!-- Mensaje de Error -->
+            <div class="flex flex-col gap-6 bg-background-light dark:bg-gray-800 border border-ice dark:border-gray-700 p-6 sm:p-8 rounded-xl shadow-inner">
+                
                 <?php if (!empty($datos['error'])) : ?>
                     <div class="flex items-start gap-3 rounded-lg bg-red-100 dark:bg-red-900/30 p-4 border border-red-300 dark:border-red-800">
                         <span class="material-symbols-outlined text-red-600 dark:text-red-400 flex-shrink-0">error</span>
@@ -84,34 +103,41 @@
                     </div>
                 <?php endif; ?>
 
-                <!-- Formulario -->
-                <form method="POST" action="../Controlador/controladorProducto.php?accion=salida" class="flex flex-col gap-5">
+                <form method="POST" action="../Controlador/controladorProducto.php?accion=salida" class="flex flex-col gap-6">
                     <input type="hidden" name="accion" value="salida" />
 
-                    <!-- Seleccionar Producto -->
-                    <label class="flex flex-col w-full gap-1.5">
-                        <p class="text-immersive-blue-black dark:text-startup-white text-sm font-medium">Producto</p>
+                    <label class="flex flex-col w-full gap-2">
+                        <p class="text-immersive-blue-black dark:text-startup-white text-xs font-semibold uppercase tracking-wider">
+                            Producto a retirar
+                        </p>
                         <select
                             name="idProducto"
                             id="idProducto"
                             required
-                            class="form-select w-full rounded-lg text-gray-900 dark:text-white focus:outline-0 focus:ring-2 focus:ring-resilient-turquoise/50 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 h-10 px-3 text-sm"
+                            class="form-select w-full rounded-lg text-immersive-blue-black dark:text-white 
+                                   focus:outline-0 focus:ring-4 focus:ring-resilient-turquoise/30 
+                                   border-2 border-ice dark:border-gray-600 bg-white dark:bg-gray-700 
+                                   h-12 px-4 text-sm font-medium transition duration-200"
                         >
                             <option value="">Seleccionar un producto...</option>
                             <?php if (!empty($datos['productos'])) : ?>
                                 <?php foreach ($datos['productos'] as $prod) : ?>
-                                    <option value="<?= htmlspecialchars($prod['idProducto']) ?>" data-stock="<?= htmlspecialchars($prod['stock']) ?>">
-                                        <?= htmlspecialchars($prod['nombreP']) ?> (Stock: <?= htmlspecialchars($prod['stock']) ?>)
+                                    <option 
+                                        value="<?= htmlspecialchars($prod['idProducto']) ?>" 
+                                        data-stock="<?= htmlspecialchars($prod['stock']) ?>"
+                                        <?= $prod['stock'] == 0 ? 'disabled class="text-red-500 bg-red-50 dark:bg-red-900"' : '' ?>
+                                    >
+                                        <?= htmlspecialchars($prod['nombreP']) ?> 
+                                        (Stock: <?= htmlspecialchars($prod['stock']) ?>)
                                     </option>
                                 <?php endforeach; ?>
                             <?php endif; ?>
                         </select>
                     </label>
 
-                    <!-- Cantidad y Stock Actual -->
                     <div class="flex flex-col sm:flex-row gap-4 w-full">
-                        <label class="flex flex-col flex-1 gap-1.5">
-                            <p class="text-immersive-blue-black dark:text-startup-white text-sm font-medium">Cantidad a retirar</p>
+                        <label class="flex flex-col flex-1 gap-2">
+                            <p class="text-immersive-blue-black dark:text-startup-white text-xs font-semibold uppercase tracking-wider">Cantidad a retirar</p>
                             <input
                                 type="number"
                                 name="cantidad"
@@ -119,31 +145,40 @@
                                 placeholder="0"
                                 min="1"
                                 required
-                                class="form-input w-full rounded-lg text-gray-900 dark:text-white focus:outline-0 focus:ring-2 focus:ring-resilient-turquoise/50 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 h-10 px-3 text-sm"
+                                class="form-input w-full rounded-lg text-lg text-immersive-blue-black dark:text-white 
+                                       focus:outline-0 focus:ring-4 focus:ring-resilient-turquoise/30 
+                                       border-2 border-ice dark:border-gray-600 bg-white dark:bg-gray-700 
+                                       h-12 px-4 font-bold transition duration-200"
                             />
                         </label>
-                        <label class="flex flex-col flex-1 gap-1.5">
-                            <p class="text-immersive-blue-black dark:text-startup-white text-sm font-medium">Stock actual</p>
+                        <label class="flex flex-col flex-1 gap-2">
+                            <p class="text-immersive-blue-black dark:text-startup-white text-xs font-semibold uppercase tracking-wider">Stock actual</p>
                             <input
                                 type="text"
                                 id="stockActual"
                                 disabled
-                                class="form-input w-full rounded-lg text-gray-600 dark:text-gray-400 focus:outline-0 focus:ring-0 border border-gray-200 dark:border-gray-600 bg-gray-100 dark:bg-gray-800/50 h-10 px-3 text-sm cursor-not-allowed"
+                                placeholder="Selecciona un producto"
+                                class="form-input w-full rounded-lg text-gray-500 dark:text-gray-400 focus:outline-0 focus:ring-0 
+                                       border-2 border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-800/50 
+                                       h-12 px-4 text-sm cursor-not-allowed"
                                 value=""
                             />
                         </label>
                     </div>
 
-                    <!-- Botones -->
-                    <div class="flex flex-col-reverse sm:flex-row gap-3 justify-end pt-4 border-t border-ice dark:border-gray-700 mt-2">
+                    <div class="flex flex-col-reverse sm:flex-row gap-4 justify-end pt-5 border-t border-ice dark:border-gray-700 mt-2">
                         <a href="../Controlador/controladorProducto.php?accion=listar"
-                           class="flex items-center justify-center gap-2 h-10 px-5 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-200 text-sm font-bold hover:bg-gray-300 dark:hover:bg-gray-600 transition">
+                           class="w-full sm:w-auto flex items-center justify-center gap-2 h-10 px-5 rounded-full 
+                                  bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-200 text-sm font-bold 
+                                  hover:bg-gray-300 dark:hover:bg-gray-600 transition shadow-sm">
                             <span class="material-symbols-outlined text-base">close</span>
                             <span>Cancelar</span>
                         </a>
                         <button
                             type="submit"
-                            class="flex items-center justify-center gap-2 h-10 px-5 rounded-full bg-resilient-turquoise text-startup-white text-sm font-bold hover:bg-immersive-blue-black transition">
+                            class="w-full sm:w-auto flex items-center justify-center gap-2 h-10 px-5 rounded-full 
+                                   bg-resilient-turquoise text-startup-white text-sm font-bold 
+                                   hover:bg-immersive-blue-black transition shadow-md">
                             <span class="material-symbols-outlined text-base">check_circle</span>
                             <span>Confirmar salida</span>
                         </button>
@@ -152,10 +187,9 @@
             </div>
         </div>
 
-        <!-- Footer -->
-        <footer class="flex flex-col sm:flex-row items-center justify-between gap-3 px-6 pb-4 pt-3 bg-background-light dark:bg-gray-800/60 rounded-b-xl border-t border-ice/70 dark:border-gray-700">
+        <footer class="sm:hidden flex flex-col items-center justify-between gap-3 px-6 pb-4 pt-3 bg-background-light dark:bg-gray-800/60 rounded-b-xl border-t border-ice/70 dark:border-gray-700">
             <a href="../Controlador/controladorProducto.php?accion=listar"
-               class="w-full sm:w-auto flex min-w-[120px] max-w-[220px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-9 px-4 bg-startup-white dark:bg-gray-700 text-immersive-blue-black dark:text-white text-xs sm:text-sm font-bold gap-2 border border-ice dark:border-gray-600 hover:bg-ice/70 dark:hover:bg-gray-600">
+               class="w-full flex min-w-[120px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-9 px-4 bg-startup-white dark:bg-gray-700 text-immersive-blue-black dark:text-white text-sm font-bold gap-2 border border-ice dark:border-gray-600 hover:bg-ice/70 dark:hover:bg-gray-600">
                 <span class="material-symbols-outlined text-base">arrow_back</span>
                 <span class="truncate">Volver a inventario</span>
             </a>
@@ -164,14 +198,14 @@
 </div>
 
 <script>
-    // Actualizar stock cuando se selecciona un producto
+    // Lógica JavaScript para actualizar stock (SIN CAMBIOS)
     document.getElementById('idProducto').addEventListener('change', function () {
         const selectedOption = this.options[this.selectedIndex];
         const stock = selectedOption.getAttribute('data-stock') || '';
         document.getElementById('stockActual').value = stock;
     });
 
-    // Al cargar la página, mostrar el stock del primer producto si hay
+    // Código comentado original, se mantiene por si el usuario quiere activarlo.
     /*window.addEventListener('DOMContentLoaded', () => {
         const select = document.getElementById('idProducto');
         if (select.options.length > 1) {

@@ -5,12 +5,17 @@ if (!isset($_SESSION['idUsuario'])) {
     exit();
 }
 
-$idProducto = $_GET['id'] ?? null;
+// Lógica para obtener el producto específico si fuera necesario
+// $producto = $datos['productoSeleccionado'] ?? null;
+$idProducto = $_GET['id'] ?? null; 
+// Se asume que $datos['producto'] está disponible con la información del producto.
+
 ?>
 <!DOCTYPE html>
 <html lang="es" class="light">
 <head>
     <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <title>Nueva devolución</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link href="https://fonts.googleapis.com" rel="preconnect"/>
@@ -52,9 +57,8 @@ $idProducto = $_GET['id'] ?? null;
 </head>
 <body class="font-display bg-background-light dark:bg-background-dark min-h-screen flex items-start sm:items-center justify-center px-4">
 <div class="w-full max-w-[640px] my-6">
-    <!-- HEADER -->
     <header class="flex items-center justify-between whitespace-nowrap border border-ice/70 dark:border-gray-700 bg-startup-white dark:bg-background-dark rounded-t-xl px-6 py-3 shadow-sm">
-        <div class="flex items-center gap-3 text-immersive-blue-black dark:text-startup-white">
+        <div class="flex flex-wrap items-center gap-3 text-immersive-blue-black dark:text-startup-white">
             <div class="size-8 flex items-center justify-center rounded-full bg-resilient-turquoise/10 text-resilient-turquoise">
                 <span class="material-symbols-outlined text-[26px]">undo</span>
             </div>
@@ -65,55 +69,66 @@ $idProducto = $_GET['id'] ?? null;
                 </p>
             </div>
         </div>
+        <a href="../Controlador/controladorProducto.php?accion=listar"
+           class="hidden sm:inline-flex items-center justify-center rounded-full h-8 px-3 bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-200 text-xs font-bold hover:bg-gray-300 dark:hover:bg-gray-600 transition">
+            <span class="material-symbols-outlined text-base">arrow_back</span>
+        </a>
     </header>
 
-    <!-- MAIN CARD -->
     <main class="bg-startup-white dark:bg-background-dark rounded-b-xl shadow-sm border-x border-b border-ice/70 dark:border-gray-700">
-        <div class="px-6 pt-4 pb-3">
-            <p class="text-immersive-blue-black dark:text-startup-white text-2xl sm:text-3xl font-black leading-tight tracking-[-0.03em] mb-1">
-                Nueva devolución
+        <div class="p-6">
+            <p class="text-immersive-blue-black dark:text-startup-white text-3xl font-black leading-tight tracking-[-0.03em] mb-2">
+                Devolución de Stock
             </p>
-            <p class="text-gray-600 dark:text-gray-400 text-sm">
-                Indica cuántas unidades regresan al stock.
+            <p class="text-gray-600 dark:text-gray-400 text-sm mb-4">
+                Estás devolviendo stock para: **<?= $nombreProducto ?>**
             </p>
-        </div>
 
-        <div class="px-6 pb-4">
             <form method="POST" action="../Controlador/controladorProducto.php?accion=devolucion"
-                  class="flex flex-col gap-5 bg-startup-white dark:bg-background-dark border border-ice dark:border-gray-700 p-5 rounded-xl">
+                  class="flex flex-col gap-6 bg-background-light dark:bg-gray-800 border border-ice dark:border-gray-700 p-6 sm:p-8 rounded-xl shadow-inner">
+                
                 <input type="hidden" name="idProducto" value="<?= htmlspecialchars($idProducto) ?>">
 
-                <label class="flex flex-col w-full gap-1.5">
-                    <p class="text-immersive-blue-black dark:text-startup-white text-sm font-medium">Cantidad a devolver</p>
+                <label class="flex flex-col w-full gap-2">
+                    <p class="text-immersive-blue-black dark:text-startup-white text-xs font-semibold uppercase tracking-wider">
+                        Unidades que regresan
+                    </p>
                     <input
                         type="number"
                         name="cantidad"
                         min="1"
                         required
-                        placeholder="0"
-                        class="form-input w-full rounded-lg text-gray-900 dark:text-white focus:outline-0 focus:ring-2 focus:ring-resilient-turquoise/50 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 h-10 px-3 text-sm"
+                        placeholder="Escribe la cantidad aquí"
+                        class="form-input w-full rounded-lg text-lg text-immersive-blue-black dark:text-white 
+                               focus:outline-0 focus:ring-4 focus:ring-resilient-turquoise/30 
+                               border-2 border-ice dark:border-gray-600 bg-white dark:bg-gray-700 
+                               h-12 px-4 font-bold transition duration-200"
                     />
                 </label>
 
-                <div class="flex flex-col-reverse sm:flex-row gap-3 justify-end pt-4 border-t border-ice dark:border-gray-700 mt-2">
+                <div class="flex flex-col-reverse sm:flex-row gap-4 justify-end pt-5 border-t border-ice dark:border-gray-700 mt-2">
                     <a href="../Controlador/controladorProducto.php?accion=listar"
-                       class="flex items-center justify-center gap-2 h-10 px-5 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-200 text-sm font-bold hover:bg-gray-300 dark:hover:bg-gray-600 transition">
+                       class="w-full sm:w-auto flex items-center justify-center gap-2 h-10 px-5 rounded-full 
+                              bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-200 text-sm font-bold 
+                              hover:bg-gray-300 dark:hover:bg-gray-600 transition shadow-sm">
                         <span class="material-symbols-outlined text-base">close</span>
                         <span>Cancelar</span>
                     </a>
                     <button
                         type="submit"
-                        class="flex items-center justify-center gap-2 h-10 px-5 rounded-full bg-resilient-turquoise text-startup-white text-sm font-bold hover:bg-immersive-blue-black transition">
+                        class="w-full sm:w-auto flex items-center justify-center gap-2 h-10 px-5 rounded-full 
+                               bg-resilient-turquoise text-startup-white text-sm font-bold 
+                               hover:bg-immersive-blue-black transition shadow-md">
                         <span class="material-symbols-outlined text-base">check_circle</span>
-                        <span>Registrar devolución</span>
+                        <span>Confirmar devolución</span>
                     </button>
                 </div>
             </form>
         </div>
 
-        <footer class="flex flex-col sm:flex-row items-center justify-between gap-3 px-6 pb-4 pt-3 bg-background-light dark:bg-gray-800/60 rounded-b-xl border-t border-ice/70 dark:border-gray-700">
+        <footer class="sm:hidden flex flex-col items-center justify-between gap-3 px-6 pb-4 pt-3 bg-background-light dark:bg-gray-800/60 rounded-b-xl border-t border-ice/70 dark:border-gray-700">
             <a href="../Controlador/controladorProducto.php?accion=listar"
-               class="w-full sm:w-auto flex min-w-[120px] max-w-[220px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-9 px-4 bg-startup-white dark:bg-gray-700 text-immersive-blue-black dark:text-white text-xs sm:text-sm font-bold gap-2 border border-ice dark:border-gray-600 hover:bg-ice/70 dark:hover:bg-gray-600">
+               class="w-full flex min-w-[120px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-9 px-4 bg-startup-white dark:bg-gray-700 text-immersive-blue-black dark:text-white text-sm font-bold gap-2 border border-ice dark:border-gray-600 hover:bg-ice/70 dark:hover:bg-gray-600">
                 <span class="material-symbols-outlined text-base">arrow_back</span>
                 <span class="truncate">Volver a inventario</span>
             </a>
