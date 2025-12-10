@@ -241,9 +241,6 @@ $current_fecha_fin = $_GET['fecha_fin'] ?? '';
                                 <td class="px-4 py-3 text-gray-600 dark:text-gray-300 text-sm whitespace-nowrap">
                                     <?= htmlspecialchars($fila['fechaM']) ?>
                                 </td>
-                                <td class="px-4 py-3 text-gray-400 dark:text-gray-500 text-xs whitespace-nowrap">
-                                     <?= htmlspecialchars($fila['idProducto'] ?? 'N/A') ?>
-                                </td>
                                 </tr>
                         <?php endforeach; ?>
                     <?php else : ?>
