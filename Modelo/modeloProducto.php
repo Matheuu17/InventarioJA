@@ -118,7 +118,7 @@ class modeloProducto {
             $stmt->execute([$tipo, $idUsuario, $idProducto, $cantidad]);
 
             // Actualizar stock
-            $sql2 = "UPDATE Producto SET stock = stock - ? WHERE idProducto=?";
+            $sql2 = "UPDATE producto SET stock = stock - ? WHERE idProducto=?";
             $stmt2 = $this->db->prepare($sql2);
             $stmt2->execute([$cantidad, $idProducto]);
 
