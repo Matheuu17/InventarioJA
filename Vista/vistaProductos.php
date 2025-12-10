@@ -216,7 +216,7 @@ $nombreUsuario = htmlspecialchars($_SESSION['nombreU'] ?? 'Usuario');
                                                 </a>
                                                 <a href="../Controlador/controladorProducto.php?accion=devolucion&id=<?= urlencode($prod['idProducto']) ?>"
                                                    class="p-2 rounded-full hover:bg-ice dark:hover:bg-gray-800"
-                                                   title="Devolver / Registrar movimiento">
+                                                   title="Devolver">
                                                     <span class="material-symbols-outlined text-lg">undo</span>
                                                 </a>
                                             </div>
