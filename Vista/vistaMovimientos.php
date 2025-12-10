@@ -193,8 +193,6 @@ $current_fecha_fin = $_GET['fecha_fin'] ?? '';
                         <th class="px-4 py-3 text-left text-immersive-blue-black dark:text-gray-200 text-xs md:text-sm font-semibold leading-normal uppercase tracking-wide whitespace-nowrap">Cantidad</th>
                         <th class="px-4 py-3 text-left text-immersive-blue-black dark:text-gray-200 text-xs md:text-sm font-semibold leading-normal uppercase tracking-wide whitespace-nowrap">Usuario</th>
                         <th class="px-4 py-3 text-left text-immersive-blue-black dark:text-gray-200 text-xs md:text-sm font-semibold leading-normal uppercase tracking-wide whitespace-nowrap">Fecha y hora</th>
-                        <th class="px-4 py-3 text-left text-immersive-blue-black dark:text-gray-200 text-xs md:text-sm font-semibold leading-normal uppercase tracking-wide whitespace-nowrap">ID P.</th>
-                        <th class="px-4 py-3 text-left text-immersive-blue-black dark:text-gray-200 text-xs md:text-sm font-semibold leading-normal uppercase tracking-wide whitespace-nowrap hidden">Acción</th>
                     </tr>
                     </thead>
                     <tbody>
